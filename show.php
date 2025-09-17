@@ -31,7 +31,7 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
     <form method="POST" id="comment_data">
 
         <div class="form-floating">
-            <input name="username" type="hidden" value="<?php echo $_SESSION["username"]; ?>" class="form-control" id="comment">
+            <input name="username" type="hidden" value="<?php if (isset($_SESSION["username"])) echo $_SESSION["username"];?>" class="form-control" id="comment">
         </div>
 
         <div class="form-floating">
@@ -57,7 +57,10 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
             <h5 class="card-title"><?php echo $singleComment->username; ?></h5>
             <p class="card-text"><?php echo $singleComment->comment; ?></p>
 
-             <button id="delete-btn" value="<?php echo $singleComment->id; ?>" class="btn btn-danger mt-3" >Delete</button>
+            <?php if (isset($_SESSION['username']) and $_SESSION['username'] == $singleComment->username) : ?>
+                 <button id="delete-btn" value="<?php echo $singleComment->id; ?>" class="btn btn-danger mt-3" >Delete</button>
+            <?php endif; ?>
+
         </div>
     </div>
 <?php endforeach; ?>

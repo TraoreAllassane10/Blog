@@ -13,10 +13,17 @@ if (isset($_GET['id'])) {
     $post = $onePost->fetch(PDO::FETCH_OBJ);
 }
 
+// Comment system
 $comments = $conn->query("SELECT * FROM comments WHERE post_id = $id");
 $comments->execute();
 
 $comment = $comments->fetchAll(PDO::FETCH_OBJ);
+
+// Rating system
+$ratings = $conn->query("SELECT * FROM rates WHERE post_id = $id");
+$ratings->execute();
+
+$rating = $ratings->fetch(PDO::FETCH_OBJ);
 
 ?>
 
@@ -27,8 +34,8 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
 
         <form id="form-data" method="post">
             <div class="my-rating"></div>
-            <input type="text" id="rating" name="rating">
-            <input type="text" id="post_id" name="post_id" value="<?php echo $post->id; ?>">
+            <input type="hidden" id="rating" name="rating">
+            <input type="hidden" id="post_id" name="post_id" value="<?php echo $post->id; ?>">
         </form>
 
     </div>
@@ -135,6 +142,15 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
         // Rating system
         $(".my-rating").starRating({
             starSize: 25,
+            initialRating: "<?php
+                if(isset($rating->ratings)) {
+                    echo $rating->ratings;
+                }
+                else {
+                    echo 0;
+                }
+            ?>",
+
             callback: function(currentRating, $el) {
                 $('#rating').val(currentRating);
             }

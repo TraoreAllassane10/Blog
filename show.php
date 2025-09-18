@@ -20,10 +20,13 @@ $comments->execute();
 $comment = $comments->fetchAll(PDO::FETCH_OBJ);
 
 // Rating system
-$ratings = $conn->query("SELECT * FROM rates WHERE post_id = $id");
-$ratings->execute();
+if (isset($_SESSION["user_id"])) {
+    $ratings = $conn->query("SELECT * FROM rates WHERE post_id = $id AND user_id = $_SESSION[user_id]");
+    $ratings->execute();
 
-$rating = $ratings->fetch(PDO::FETCH_OBJ);
+    $rating = $ratings->fetch(PDO::FETCH_OBJ);
+}
+
 
 ?>
 
@@ -32,11 +35,14 @@ $rating = $ratings->fetch(PDO::FETCH_OBJ);
         <h5 class="card-title"><?php echo $post->title; ?></h5>
         <p class="card-text"><?php echo $post->body; ?></p>
 
-        <form id="form-data" method="post">
-            <div class="my-rating"></div>
-            <input type="hidden" id="rating" name="rating">
-            <input type="hidden" id="post_id" name="post_id" value="<?php echo $post->id; ?>">
-        </form>
+        <?php if (isset($_SESSION["user_id"])) : ?>
+            <form id="form-data" method="post">
+                <div class="my-rating"></div>
+                <input type="hidden" id="rating" name="rating">
+                <input type="hidden" id="post_id" name="post_id" value="<?php echo $post->id; ?>">
+                <input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
+            </form>
+        <?php endif; ?>
 
     </div>
 </div>
@@ -45,7 +51,7 @@ $rating = $ratings->fetch(PDO::FETCH_OBJ);
     <form method="POST" id="comment_data">
 
         <div class="form-floating">
-            <input name="username" type="hidden" value="<?php if (isset($_SESSION["username"])) echo $_SESSION["username"]; ?>" class="form-control" id="comment">
+            <input name="username" type="hidden" value="<?php if (isset($_SESSION["username"])) echo $_SESSION["username"]; ?>" class="form-control">
         </div>
 
         <div class="form-floating">
@@ -143,13 +149,12 @@ $rating = $ratings->fetch(PDO::FETCH_OBJ);
         $(".my-rating").starRating({
             starSize: 25,
             initialRating: "<?php
-                if(isset($rating->ratings)) {
-                    echo $rating->ratings;
-                }
-                else {
-                    echo 0;
-                }
-            ?>",
+                            if (isset($rating->ratings) and isset($rating->user_id) and $rating->user_id == $_SESSION['user_id']) {
+                                echo $rating->ratings;
+                            } else {
+                                echo 0;
+                            }
+                            ?>",
 
             callback: function(currentRating, $el) {
                 $('#rating').val(currentRating);
@@ -164,10 +169,10 @@ $rating = $ratings->fetch(PDO::FETCH_OBJ);
             $.ajax({
                 type: "POST",
                 url: "insert-ratings.php",
-                data: formdata, 
+                data: formdata,
 
                 success: function() {
-                    alert(formdata)
+                    // alert(formdata)
                 }
             });
 

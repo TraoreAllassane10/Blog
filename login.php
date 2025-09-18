@@ -41,7 +41,7 @@
           
             if(password_verify($password, $data['mypassword'])) {
               
-
+              $_SESSION['user_id'] = $data['id'];
               $_SESSION['username'] = $data['username'];
               $_SESSION['email'] = $data['email'];
 
@@ -69,12 +69,12 @@
     <h1 class="h3 mt-5 fw-normal text-center">Please login in</h1>
 
     <div class="form-floating">
-      <input name="email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+      <input name="email" type="email" class="form-control" id="floatingInput" >
       <label for="floatingInput">Email address</label>
     </div>
     
     <div class="form-floating">
-      <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+      <input name="password" type="password" class="form-control" id="floatingPassword" >
       <label for="floatingPassword">Password</label>
     </div>
 

@@ -24,6 +24,13 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
     <div class="card-body">
         <h5 class="card-title"><?php echo $post->title; ?></h5>
         <p class="card-text"><?php echo $post->body; ?></p>
+
+        <form id="form-data" method="post">
+            <div class="my-rating"></div>
+            <input type="text" id="rating" name="rating">
+            <input type="text" id="post_id" name="post_id" value="<?php echo $post->id; ?>">
+        </form>
+
     </div>
 </div>
 
@@ -31,7 +38,7 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
     <form method="POST" id="comment_data">
 
         <div class="form-floating">
-            <input name="username" type="hidden" value="<?php if (isset($_SESSION["username"])) echo $_SESSION["username"];?>" class="form-control" id="comment">
+            <input name="username" type="hidden" value="<?php if (isset($_SESSION["username"])) echo $_SESSION["username"]; ?>" class="form-control" id="comment">
         </div>
 
         <div class="form-floating">
@@ -58,7 +65,7 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
             <p class="card-text"><?php echo $singleComment->comment; ?></p>
 
             <?php if (isset($_SESSION['username']) and $_SESSION['username'] == $singleComment->username) : ?>
-                 <button id="delete-btn" value="<?php echo $singleComment->id; ?>" class="btn btn-danger mt-3" >Delete</button>
+                <button id="delete-btn" value="<?php echo $singleComment->id; ?>" class="btn btn-danger mt-3">Delete</button>
             <?php endif; ?>
 
         </div>
@@ -105,12 +112,12 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
                 type: "POST",
                 url: "delete-comments.php",
                 data: {
-                    delete : "delete",
+                    delete: "delete",
                     id: id
                 },
 
                 success: function() {
-        
+
                     $("#msg").html("Deleted Successfully").toggleClass("alert alert-danger bg-danger text-white");
 
                     fetch();
@@ -124,5 +131,31 @@ $comment = $comments->fetchAll(PDO::FETCH_OBJ);
                 $("body").load("show.php?id=<?php echo $_GET['id']; ?>");
             }, 3000);
         }
+
+        // Rating system
+        $(".my-rating").starRating({
+            starSize: 25,
+            callback: function(currentRating, $el) {
+                $('#rating').val(currentRating);
+            }
+        });
+
+        $(".my-rating").click(function(e) {
+            e.preventDefault();
+
+            let formdata = $("#form-data").serialize() + "&insert=insert";
+
+            $.ajax({
+                type: "POST",
+                url: "insert-ratings.php",
+                data: formdata, 
+
+                success: function() {
+                    alert(formdata)
+                }
+            });
+
+        });
+
     });
 </script>

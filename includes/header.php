@@ -16,7 +16,7 @@
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/carousel/">
 
-    
+    <link rel="stylesheet" type="text/css" href="rating-plugin/src/css/star-rating-svg.css">
 
     
 
